@@ -70,6 +70,7 @@ led_menu_input() {
 			;;
 		3)
 			echo "Associate with a system event"
+			associate_system_menu "$name"
 			;;
 		4)
 			echo "Associate with performance of process"
@@ -86,5 +87,57 @@ led_menu_input() {
 			;;
 	esac
 }
+
+associate_system_menu() {
+	local led_name=$1
+	local file="trigger"
+	local array=()
+	local fileline=$(cat $file)
+	local count=0
+
+	echo "Associate $name with a system event"
+	echo "=========================================="
+	echo "Available events are: "
+	echo "---------------------"
+	
+	for line in $fileline; do	# reading trigger file, automatically separate the whitespaces
+		array[$count]=${line}	# creating an array to store names
+		((count++))
+		echo $count. "$line"
+	done
+
+	((count++))
+	echo $count. Quit to previous menu
+
+	associate_system_menu_input "$led_name" "${array[@]}"	# passing array to input menu
+
+}
+
+associate_system_menu_input() {
+	local array=("$@")
+	local total=${#array[@]}
+
+	printf "Please select an option (1-%d): " "$total"
+	read -r input	# Read user input
+	
+	if [ "$input" -eq "$input" ] 2>/dev/null; then	# check if user input is an integer
+		if [ "$input" -eq "$total" ]; then	# if user wants to quit
+			led_menu "$led_name"
+		elif [[ "$input" -gt 0 && "$input" -lt "$total" ]]; then
+			trigger_name=${array[$input]}	# stores name of trigger
+			echo "$trigger_name">trigger	# calls trigger name into trigger file
+			led_menu "$led_name"
+		else
+			echo "Invalid Input... Try Again"
+			clear
+			associate_system_menu "$led_name"
+		fi
+	else
+		echo "Invalid Input... Try Again"
+		associate_system_menu "$led_name"
+	fi
+
+}
+
 
 start_menu
