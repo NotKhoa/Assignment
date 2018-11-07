@@ -83,7 +83,7 @@ led_menu_input() {
 			;;
 		*)
 			echo "Invalid Input..."
-			led_menu $name
+			led_menu "$name"
 			;;
 	esac
 }
@@ -92,7 +92,7 @@ associate_system_menu() {
 	local led_name=$1
 	local file="trigger"
 	local array=()
-	local fileline=$(cat $file)
+	fileline=$(cat $file)
 	local count=0
 
 	echo "Associate $name with a system event"
