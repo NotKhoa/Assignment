@@ -148,12 +148,12 @@ associate_performance_menu() {
 	read -r input
 	local array=($(ps -eo %c | tail -n +2 | sort | uniq | grep -i "$input" 2>/dev/null))	# stores list of process into an array
 
-	if [[ ${#array[*]} -gt 1 ]]; then
+	if [[ ${#array[*]} -gt 1 ]]; then	# if there is more than 1 program with the same name
 		echo "Name Conflict"
 		echo "-------------"
 		echo "System has detected a name conflict. Do you want to monitor: "
 		
-		for i in "${array[@]}"; do
+		for i in "${array[@]}"; do	# list potential programs
 			echo "$count". "$i"
 			((count++))
 		done
