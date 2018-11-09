@@ -139,5 +139,56 @@ associate_system_menu_input() {
 
 }
 
+associate_performance_menu() {
+	local led_name=$1
+	local count=1;
+	
+	echo Associate "$led_name" with the performance of a process
+	printf "Please enter the name of the program to monitor (partial names are ok): "
+	read -r input
+	local array=($(ps -eo %c | tail -n +2 | sort | uniq | grep -i "$input" 2>/dev/null))	# stores list of process into an array
+
+	if [[ ${#array[*]} -gt 1 ]]; then
+		echo "Name Conflict"
+		echo "-------------"
+		echo "System has detected a name conflict. Do you want to monitor: "
+		
+		for i in "${array[@]}"; do
+			echo "$count". "$i"
+			((count++))
+		done
+
+		echo "$count". "Return to Main Menu"
+		printf "Please select an option (1-%d): " "$count"
+
+		read -r name_conflict_input
+		if [ "$name_conflict_input" -eq "$name_conflict_input" ] 2/dev/null; then	# check if input is an integer
+			if [ "$name_conflict_input" -eq "$count" ]; then
+				start_menu "$led_name"
+			elif [[ "$name_conflict_input" -gt 0 && "$name_conflict_input" -lt "$count" ]]; then
+				program=${array[$name_conflict_input]}		# stores selected program into variable from array
+				monitor_performace "$program" "$led_name"
+			else
+				echo "Invalid Input... Returning..."
+				led_menu "$led_name"
+			fi
+		fi
+	else
+		program=${array[*]}
+		monitor_performance "$program" "$led_name"
+	fi
+}
+
+monitor_performance() {
+	local program=$1
+	local led_name=$2
+
+	echo "Do you wish to"
+	echo "1. Monitor the memory"
+	echo "2. Monitor the cpu"
+	echo "3. Return to Led Menu"
+	printf "Enter the following options (1-3): "
+	
+}
 
 start_menu
