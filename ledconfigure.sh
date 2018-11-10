@@ -25,6 +25,7 @@ start_menu_input() {
 	read -r input
 	if [ "$input" -eq "$input" ] 2>/dev/null; then	# Check user input is an integer
 		if [ "$input" -eq "$total" ]; then	# if user wants to quit
+			kill_process			# kills background.sh if running
 			exit 0
 		elif [[ "$input" -lt "$total" && "$input" -gt 0 ]]; then	# User input is correct
 			directory=${array[$input-1]}	# Stores directory into variable
@@ -74,9 +75,12 @@ led_menu_input() {
 			;;
 		4)
 			echo "Associate with performance of process"
+			associate_performance_menu "$name"
 			;;
 		5)
 			echo "Stopping association"
+			kill_process
+			led_menu "$name"
 			;;
 		6)
 			start_menu
@@ -188,7 +192,39 @@ monitor_performance() {
 	echo "2. Monitor the cpu"
 	echo "3. Return to Led Menu"
 	printf "Enter the following options (1-3): "
+	read -r input
+	case $input in
+		1)
+			echo "Monitoring memory.."
+			kill_process
+			/home/pi/Desktop/demo/background.sh -m "$program" 2> /dev/null &
+			led_menu "$led_name"
+			;;
+		2)
+			echo "Monitor cpu.."
+			kill_process
+			/home/pi/Desktop/demo/background.sh -c "$program" 2> /dev/null &
+			led_menu "$led_name"
+			;;
+		3)
+			kill_process
+			led_menu "$led_name"
+			;;
+		*)
+			echo "Invalid input"
+			monitor_performance
+			;;
+	esac
 	
+}
+
+kill_process() {
+	echo "0">brightnesss
+	pid=$(pgrep background.sh)
+	if [ ! -z "$pid" ] 2>/dev/null; then
+		kill "$pid"		# kill background.sh
+		wait "$pid" 2>/dev/null
+	fi
 }
 
 start_menu
