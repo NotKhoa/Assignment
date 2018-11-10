@@ -64,10 +64,12 @@ led_menu_input() {
 		1)
 			echo "Turning on..."
 			echo "1">brightness
+			led_menu "$name"
 			;;
 		2)
 			echo "Turning off..."
 			echo "0">brightness
+			led_menu "$name"
 			;;
 		3)
 			echo "Associate with a system event"
